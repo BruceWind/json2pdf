@@ -3,28 +3,28 @@
 // to parse json to pdf
 // import html-pdf, this means I use json to html, and than parse the html to pdf.
 let pdf = require("html-pdf");
-var path = require("path");
+const path = require("path");
 
 let fs = require("fs");
 global.appRoot = path.resolve(__dirname);
 
 const PLACEHOLDER = "{TBBODY}";
 
-let table = "";
+let tbody = "";
 
-table += "<tbody>";
+tbody += "<tbody>";
 
 let array = [
   { key_one: "He carefully ______ the onions into small pieces before adding them to the pot of soup.", key_two: "chop" },
   { key_one: "123", key_two: "test" },
 ];
 array.forEach(function (row) {
-  table += "<tr>";
-  table += "<td>" + row.key_one + "</td>";
-  table += "<td>" + row.key_two + "</td>";
-  table += "</tr>";
+  tbody += "<tr>";
+  tbody += "<td>" + row.key_one + "</td>";
+  tbody += "<td>" + row.key_two + "</td>";
+  tbody += "</tr>";
 });
-table += "</tbody>";
+tbody += "</tbody>";
 
 let options = {
   format: "A4",
@@ -33,13 +33,13 @@ let options = {
   base: "",
 };
 
-options.base = `file://${global.appRoot}/base/`;
+let htmlTemplate = fs.readFileSync("./base/Template.html", "utf8");
 
-let html = fs.readFileSync("./base/Index.html", "utf8");
+// put tbody into html template.
+htmlTemplate = htmlTemplate.replace(PLACEHOLDER, tbody);
 
-html = html.replace(PLACEHOLDER, table);
-
-pdf.create(html, options).toFile("./test.pdf", function (err, result) {
+// to create pdf
+pdf.create(htmlTemplate, options).toFile("./test.pdf", function (err, result) {
   if (err) return console.log(err);
   console.log("pdf create ");
 });
